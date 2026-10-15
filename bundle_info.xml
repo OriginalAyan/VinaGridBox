@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ChimeraX Vina Grid Box source bundle. Build with ChimeraX's devel build command. -->
+<BundleInfo name="ChimeraX-VinaGridBox" version="1.9" package="chimerax.vinagridbox" minSessionVersion="1" maxSessionVersion="1">
+  <Author>Ayan Bhowmik</Author>
+  <Email>ayan.bhowmik.bd@gmail.com</Email>
+  <URL>https://www.rbvi.ucsf.edu/chimerax/</URL>
+  <Synopsis>Visualize, inspect, and export AutoDock Vina search-space center and size values in ChimeraX.</Synopsis>
+  <Description>
+ChimeraX Vina Grid Box is a ChimeraX bundle for defining and inspecting an AutoDock Vina search space directly on a molecular structure. It visualizes Vina center_x/center_y/center_z and size_x/size_y/size_z values as a 3D box, can derive a padded selection bounding box (recommended for receptor pockets) or a Vina-style ligand-centroid box (for ligand-only compatibility checks) from selected atoms, reports exact Cartesian bounds, and copies a Vina-ready configuration block. The optional rounded map-extent display illustrates the voxelized span implied by Vina's grid spacing without changing the exported size values.
+
+The stable release excludes experimental drag-resize controls. Center and size are edited numerically in the GUI or with the vinabox command. For selection-derived boxes, the recommended method is an axis-aligned minimum/maximum bounding box with padding added to every side. A second, explicitly ligand-oriented option mirrors Vina’s ligand-centroid box calculation. The bundle does not perform docking or ligand/receptor preparation.
+
+Author and maintainer: Ayan Bhowmik (ayan.bhowmik.bd@gmail.com). Coding and debugging were carried out with assistance from ChatGPT (OpenAI).
+  </Description>
+  <Categories>
+    <Category name="Binding Analysis"/>
+  </Categories>
+  <Dependencies>
+    <Dependency name="ChimeraX-Core" version="~=1.0"/>
+    <Dependency name="ChimeraX-UI" version="~=1.0"/>
+    <Dependency name="ChimeraX-Atomic" version="~=1.0"/>
+    <Dependency name="ChimeraX-Surface" version="~=1.0"/>
+  </Dependencies>
+  <DataFiles>
+    <DataFile>docs/user/tools/vinagridbox.html</DataFile>
+    <DataFile>LICENSE.txt</DataFile>
+  </DataFiles>
+  <Classifiers>
+    <PythonClassifier>Development Status :: 3 - Alpha</PythonClassifier>
+    <PythonClassifier>Intended Audience :: Science/Research</PythonClassifier>
+    <PythonClassifier>License :: OSI Approved :: MIT License</PythonClassifier>
+    <PythonClassifier>Natural Language :: English</PythonClassifier>
+    <PythonClassifier>Programming Language :: Python :: 3</PythonClassifier>
+    <PythonClassifier>Programming Language :: Python :: 3.11</PythonClassifier>
+    <PythonClassifier>Topic :: Scientific/Engineering :: Chemistry</PythonClassifier>
+    <PythonClassifier>Topic :: Scientific/Engineering :: Visualization</PythonClassifier>
+    <ChimeraXClassifier>ChimeraX :: Tool :: Vina Grid Box :: Binding Analysis :: Visualize and edit AutoDock Vina search-space center and size values</ChimeraXClassifier>
+    <ChimeraXClassifier>ChimeraX :: Command :: vinabox :: Binding Analysis :: Create/update boxes, derive boxes with bounds/centroid methods, show/hide GUI, report, or clear</ChimeraXClassifier>
+  </Classifiers>
+</BundleInfo>
