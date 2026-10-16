@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vina Grid Box</title>
+<style>
+body { font-family: sans-serif; line-height: 1.45; max-width: 900px; margin: 1.5em auto; padding: 0 1em; }
+code, pre { font-family: ui-monospace, Consolas, monospace; }
+pre { background: #f4f4f4; padding: 0.8em; overflow-x: auto; }
+table { border-collapse: collapse; margin: 1em 0; }
+th, td { border: 1px solid #ccc; padding: 0.45em 0.7em; text-align: left; }
+.note { background: #f7f7f7; border-left: 4px solid #888; padding: 0.6em 0.8em; }
+</style>
+</head>
+<body>
+<h1>Vina Grid Box</h1>
+<p><strong>Author:</strong> Ayan Bhowmik<br>
+<strong>Contact:</strong> ayan.bhowmik.bd@gmail.com<br>
+<strong>Version:</strong> 1.9.1<br>
+<strong>License:</strong> MIT</p>
+
+<p>ChimeraX Vina Grid Box is a visualization and search-space editing tool for AutoDock Vina. It places the Vina search space directly on the molecular scene using the six values Vina consumes: <code>center_x/y/z</code> and <code>size_x/y/z</code>.</p>
+
+<div class="note"><strong>Stable-release scope:</strong> version 1.9.1 intentionally excludes experimental mouse drag-resizing. Use the numeric fields or the <code>vinabox set</code> command to edit the box.</div>
+
+<h2>Open the tool</h2>
+<p>Use <b>Tools → Binding Analysis → Vina Grid Box</b>, or:</p>
+<pre>vinabox showgui</pre>
+
+<h2>Vina box geometry</h2>
+<p>The displayed box is defined directly from the Vina center and size:</p>
+<pre>minimum = center - size / 2
+maximum = center + size / 2</pre>
+<p>The GUI's <b>Exact box bounds</b> section shows these minimum and maximum coordinates for X, Y and Z.</p>
+
+<h2>GUI controls</h2>
+<h3>Center and Size</h3>
+<p>Enter <code>center_x/y/z</code> and <code>size_x/y/z</code> in Angstroms. <b>New box</b> creates or updates the 3D box with those values. Editing any field updates the displayed box.</p>
+
+<h3>From selection: choose a calculation method</h3>
+<p>Select the atoms the box should cover, choose a method, set <b>Padding per side (Å)</b>, and click <b>Create box from selection</b>.</p>
+
+<h4>Selection bounds + padding (recommended)</h4>
+<p>This is the recommended method for receptor-pocket residues and arbitrary selected atom groups. It finds the minimum and maximum coordinates on each axis and expands both ends by the padding. The center is the midpoint between the expanded bounds; the size is the expanded maximum minus the expanded minimum.</p>
+<pre>minimum = min(coordinates) - padding
+maximum = max(coordinates) + padding
+center  = (minimum + maximum) / 2
+size    = maximum - minimum</pre>
+<p>This directly contains all selected atoms and gives the requested padding on every face. It does not round dimensions to whole Angstroms or grid spacing; Vina performs its own map discretization when it reads the exported box.</p>
+
+<h4>Vina ligand-centroid method (ligands only; not recommended for receptor pockets)</h4>
+<p>This option mirrors Vina's ligand-derived box convention: it uses the arithmetic mean of the selected atom coordinates as the center, measures the furthest coordinate excursion from that center on each axis, adds padding to the half-dimension, doubles it, and rounds the dimension upward to an integer Angstrom value.</p>
+<pre>center = mean(atom coordinates)
+size_axis = ceil(2 * (max(abs(coordinate_axis - center_axis)) + padding))</pre>
+<p>This option is provided for compatibility and comparison with Vina's ligand-derived convention. It is not recommended for receptor-pocket selections because the arithmetic mean may differ from the midpoint of the coordinate extrema, creating an offset or larger box than the tight padded bounding box.</p>
+<p><b>Maintainer's note:</b> Vina's source code documents what its centroid-based calculation does, but the maintainer has not found a clear published explanation in the source/documentation reviewed for why this convention was chosen over a minimum/maximum-centred padded bounding box. The bounds method is recommended here for receptor-pocket selection because it directly expresses the intended geometry. This is a use-case recommendation, not a claim that bounds-centering is universally superior for all Vina workflows.</p>
+
+<h3>Selection padding</h3>
+<p><b>Padding per side (Å)</b> is added beyond every selected-coordinate extreme in the recommended bounds method. In the Vina ligand-centroid method, it is the buffer used by that calculation. The default is 4 Å. Changing padding while a selection-derived box is active recalculates the box using the active method. Editing center/size manually detaches the box from the stored selection coordinates.</p>
+
+<h3>Check selection</h3>
+<p><b>Check selection</b> is a containment sanity check. It compares every selected atom against the current box and reports the number inside, the number outside, and the largest Cartesian overhang for atoms outside the box. It does not modify the box.</p>
+
+<h3>Show Vina rounded map extent</h3>
+<p>Vina discretizes the requested box dimensions using its grid spacing. With the usual 0.375 Å spacing, the internal voxel span is based on:</p>
+<pre>n = ceil(size / spacing)
+real_span = n * spacing</pre>
+<p>The optional display shows this rounded internal span as a reference. It does <strong>not</strong> replace the requested <code>size_*</code> values exported to Vina.</p>
+
+<h3>View box</h3>
+<p>Frames the current box using ChimeraX's normal <code>view</code> command.</p>
+
+<h3>Copy Vina config</h3>
+<p>Copies a ready-to-paste configuration block to the clipboard:</p>
+<pre>center_x = 26.1720
+center_y = 23.1697
+center_z = -9.0871
+size_x = 20.0000
+size_y = 20.0000
+size_z = 20.0000</pre>
+
+<h3>Box color</h3>
+<p>Changes only the ChimeraX visualization color.</p>
+
+<h3>Clear</h3>
+<p>Removes the 3D Vina box from the scene. It does not modify the molecular models.</p>
+
+<h2>Command-line interface</h2>
+<p>The command is <code>vinabox</code>. The preferred GUI actions are <code>showgui</code> and <code>hidegui</code>. The aliases <code>guishow</code> and <code>guihide</code> are also accepted.</p>
+
+<table>
+<tr><th>Command</th><th>Effect</th></tr>
+<tr><td><code>vinabox set center X,Y,Z size X,Y,Z</code></td><td>Create or update the 3D Vina box</td></tr>
+<tr><td><code>vinabox bounds padding 4</code></td><td>Recommended: selected atom bounds plus per-side padding</td></tr>
+<tr><td><code>vinabox centroid padding 4</code></td><td>Vina ligand-centroid calculation; intended for ligand atoms</td></tr>
+<tr><td><code>vinabox showgui</code></td><td>Show the Vina Grid Box GUI</td></tr>
+<tr><td><code>vinabox hidegui</code></td><td>Hide the GUI; the 3D box remains</td></tr>
+<tr><td><code>vinabox report</code></td><td>Print current center/size values</td></tr>
+<tr><td><code>vinabox clear</code></td><td>Remove the 3D Vina box</td></tr>
+</table>
+
+<p>Examples:</p>
+<pre>vinabox set center 0,0,0 size 20,20,20
+vinabox set center 26.1720,23.1697,-9.0871 size 20,20,20
+vinabox bounds padding 4
+vinabox centroid padding 4
+vinabox report
+vinabox showgui
+vinabox hidegui
+vinabox clear</pre>
+
+<p>ChimeraX's <code>Float3Arg</code> syntax requires each coordinate triple to be one comma-separated token. Use <code>0,0,0</code>, not <code>0 0 0</code>.</p>
+<p>Backward compatibility: the older actions <code>from-selection-bounds</code>, <code>from-selection-vina</code>, <code>show</code>, and <code>hide</code> remain accepted. Use the shorter names above in new scripts.</p>
+
+<h2>Coordinate-system note</h2>
+<p>The selection-derived workflow currently uses ChimeraX atom scene coordinates. For a direct one-to-one Vina workflow, ensure the scene coordinate frame matches the coordinates in the receptor/ligand files that will actually be passed to Vina. Be especially careful if models have been translated or otherwise transformed at the scene/model level.</p>
+
+<h2>Scope and limitations</h2>
+<ul>
+<li>No docking is performed by this bundle.</li>
+<li>No receptor or ligand PDBQT preparation is performed.</li>
+<li>The stable public release does not include experimental drag-resize controls.</li>
+</ul>
+
+<h2>Development acknowledgement</h2>
+<p>The implementation, debugging, packaging, and documentation were developed with coding assistance from <strong>ChatGPT (OpenAI)</strong>. Final source, testing decisions, and release responsibility remain with Ayan Bhowmik.</p>
+
+<h2>Citation</h2>
+<p>Bhowmik, A. (2026). <i>ChimeraX Vina Grid Box</i>, version 1.9.1. ChimeraX Toolshed.</p>
+
+<p>For AutoDock Vina itself, cite the Vina publication appropriate to the version used in your study. Source and documentation: <a href="https://github.com/ccsb-scripps/AutoDock-Vina">https://github.com/ccsb-scripps/AutoDock-Vina</a></p>
+</body>
+</html>

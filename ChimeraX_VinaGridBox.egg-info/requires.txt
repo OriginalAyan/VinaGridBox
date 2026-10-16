@@ -1,0 +1,4 @@
+ChimeraX-Core~=1.0
+ChimeraX-UI~=1.0
+ChimeraX-Atomic~=1.0
+ChimeraX-Surface~=1.0
