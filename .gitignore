@@ -1,0 +1,39 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# ChimeraX bundle build output (wheels are uploaded as release assets, not committed)
+build/
+dist/
+*.egg-info/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE and editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local temporary release archives/logs
+*.tmp
+*.log
+
+/LICENSE.txt
+# Keep src/LICENSE.txt, THIRD_PARTY_NOTICES.md, and
+# BUILDING_FOR_TOOLSHED.md tracked. They are part of the release/compliance docs.
+*.zip

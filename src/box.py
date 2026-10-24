@@ -2,7 +2,6 @@ from math import sqrt
 
 from chimerax.core.models import Model, Surface, MODEL_COLOR_CHANGED
 from chimerax.surface.shapes import cylinder_geometry
-from chimerax.atomic import Atom
 
 from .math_utils import (
     DEFAULT_SPACING,
@@ -59,9 +58,12 @@ class VinaBoxModel(Model):
         self._internal = None
         self._tool = None
         self._internal_visible = False
+        self._draw_on_top = False
         self._color_sync_pending = False
+        self._ignore_color_trigger = True
         self._color_handler = session.triggers.add_handler(MODEL_COLOR_CHANGED, self._on_model_color_changed)
         self.color = _rgba(self._visual_rgb, 255)
+        self._ignore_color_trigger = False
         self._set_initial(center, size)
 
     def set_tool(self, tool):
@@ -97,6 +99,17 @@ class VinaBoxModel(Model):
         self._size = s
         self._rebuild()
 
+    def set_visual_rgb(self, rgb, rebuild=True):
+        """Set the box's visual RGB while keeping model and child colors in sync."""
+        self._visual_rgb = tuple(int(v) for v in rgb[:3])
+        self._ignore_color_trigger = True
+        try:
+            self.color = _rgba(self._visual_rgb, 255)
+        finally:
+            self._ignore_color_trigger = False
+        if rebuild:
+            self._rebuild()
+
     def set_face(self, axis, side, coordinate):
         lo, hi = self.box_bounds()
         lo = list(lo)
@@ -113,6 +126,15 @@ class VinaBoxModel(Model):
         self._internal_visible = bool(visible)
         self._rebuild()
 
+    @property
+    def draw_on_top(self):
+        return self._draw_on_top
+
+    def set_draw_on_top(self, visible):
+        """Choose whether the box is occluded normally or drawn over the scene."""
+        self._draw_on_top = bool(visible)
+        self._rebuild()
+
     def delete(self):
         if self._color_handler is not None:
             self.session.triggers.remove_handler(self._color_handler)
@@ -120,14 +142,23 @@ class VinaBoxModel(Model):
         super().delete()
 
     def _on_model_color_changed(self, trigger_name, data):
-        source = data
-        if source is self:
-            color = getattr(source, "color", None)
-        else:
-            color = getattr(source, "color", None) if getattr(source, "parent", None) is self else None
-        if color is None or getattr(source, "name", "").startswith("Vina_"):
+        """Track color changes made through ChimeraX's Models panel as undoable edits."""
+        if self._ignore_color_trigger or data is not self:
+            # Child surfaces have their own fixed colors and are not the box's
+            # overall user-selected color.
             return
-        self._visual_rgb = tuple(int(v) for v in color[:3])
+        color = getattr(self, "color", None)
+        if color is None:
+            return
+        new_rgb = tuple(int(v) for v in color[:3])
+        old_rgb = tuple(self._visual_rgb)
+        if new_rgb == old_rgb:
+            return
+        from .undo_support import capture_state, record_state_change
+        before = capture_state(self.session, tool=self._tool)
+        self._visual_rgb = new_rgb
+        after = capture_state(self.session, tool=self._tool)
+        record_state_change(self.session, before, after, "Change Vina box color")
         if not self._color_sync_pending:
             self._color_sync_pending = True
             from Qt.QtCore import QTimer
@@ -167,7 +198,7 @@ class VinaBoxModel(Model):
         surf.set_geometry(verts, None, tris)
         surf.color = _rgba(self._visual_rgb, 32)
         surf.pickable = False
-        surf.on_top = True
+        surf.on_top = self._draw_on_top
         self.add([surf])
         self._surface = surf
 
@@ -182,7 +213,7 @@ class VinaBoxModel(Model):
             edge.set_geometry(ev, en, et)
             edge.color = EDGE_RGBA
             edge.pickable = False
-            edge.on_top = True
+            edge.on_top = self._draw_on_top
             self.add([edge])
 
         if self._internal_visible:
@@ -210,6 +241,6 @@ class VinaBoxModel(Model):
                 inner.set_geometry(iv, inn, it)
                 inner.color = INTERNAL_RGBA
                 inner.pickable = False
-                inner.on_top = True
+                inner.on_top = self._draw_on_top
                 self.add([inner])
                 self._internal = inner

@@ -1,24 +1,35 @@
-# Building the Toolshed wheel with ChimeraX 1.12
+## Source structure
 
-This is a **source bundle**, not a prebuilt wheel. Build the distributable wheel with ChimeraX's bundle builder so the required `ChimeraX :: Bundle` classifier is generated.
+The bundle root contains `bundle_info.xml` and `src/`. Use UCSF ChimeraX's own bundle-builder commands from ChimeraX 1.12 or another supported ChimeraX development installation.
 
-1. Extract this folder to a path without spaces, for example `H:\vina\myTools\ChimeraX-VinaGridBox-v1.9.1-source`.
-2. Open ChimeraX 1.12 and run:
+## Local development test
 
-   ```text
-   devel clean H:/vina/myTools/ChimeraX-VinaGridBox-v1.9.1-source
-   devel build H:/vina/myTools/ChimeraX-VinaGridBox-v1.9.1-source
-   ```
+1. Extract or clone the repository to a short, stable path.
+2. Run a clean build and install the source bundle:
 
-3. The resulting wheel is placed under that folder's `dist` directory. Use the newly created wheel, not an older wheel copied from another directory.
-4. Inspect the wheel as a ZIP archive. In `ChimeraX_VinaGridBox-1.9.1.dist-info/METADATA`, confirm there is a line starting with `Classifier: ChimeraX :: Bundle` and that it appears before `Classifier: ChimeraX :: Tool` and `Classifier: ChimeraX :: Command` entries.
-5. Test-install that exact wheel in ChimeraX:
+       devel clean H:/path/to/ChimeraX-VinaGridBox
+       devel install H:/path/to/ChimeraX-VinaGridBox
 
-   ```text
-   toolshed install H:/vina/myTools/ChimeraX-VinaGridBox-v1.9.1-source/dist/ChimeraX_VinaGridBox-1.9.1-py3-none-any.whl
-   ```
+3. Restart ChimeraX and test the GUI at Tools → Binding Analysis → Vina Grid Box.
+4. Test manual numeric entry, `vinabox set`, `vinabox bounds`, `vinabox centroid`, `vinabox report`, `vinabox clear`, GUI show/hide, box color/display toggles, undo/redo, and mouse move/resize. Confirm GUI show/hide is not undoable.
+5. Test normal `.pdbqt` opening using ChimeraX's native AutoDock PDBQT reader, including a multi-pose docking output (ViewDock), a single receptor PDBQT, drag-and-drop, and opening a file from Windows Explorer. VinaGridBox intentionally does not register a separate PDBQT provider or expose a separate PDBQT-opening GUI action. If the native reader preference needs resetting, test `vinabox nativepdbqt`.
+6. Verify that box coordinates use the same coordinate frame as files supplied to Vina.
+7. Run the standalone tests from a Python environment that can import pytest:
 
-6. Verify `vinabox set center 0,0,0 size 20,20,20`, `vinabox bounds padding 4`, `vinabox centroid padding 4`, `vinabox report`, `vinabox showgui`, `vinabox hidegui`, `vinabox clear`, and Tools → Binding Analysis → Vina Grid Box.
-7. Submit the exact newly built and tested wheel to the ChimeraX Toolshed.
+       python -m pytest -q tests
 
-Do **not** build the publishable wheel with `python setup.py bdist_wheel`, `pip wheel`, or another generic Python packaging command. The bundle's `bundle_info.xml` is the source of ChimeraX metadata; ChimeraX's `devel build` / Bundle Builder generates the required base bundle classifier.
+## Build the distributable wheel
+
+Run inside ChimeraX:
+
+       devel clean H:/path/to/ChimeraX-VinaGridBox
+       devel build H:/path/to/ChimeraX-VinaGridBox
+
+Use the newly generated wheel under `dist/`. Do not manually edit the wheel's `METADATA`.
+
+Install-test the exact wheel using:
+
+       toolshed install H:/path/to/dist/ChimeraX_VinaGridBox-2.0.0-py3-none-any.whl
+
+Use the exact filename emitted by the build. Check version/category/license metadata, GUI launch, commands, undo/redo, native `.pdbqt` opening, and format preference behavior.
+

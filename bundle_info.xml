@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ChimeraX Vina Grid Box source bundle. Build with ChimeraX's devel build command. -->
-<BundleInfo name="ChimeraX-VinaGridBox" version="1.9.1" package="chimerax.vinagridbox" minSessionVersion="1" maxSessionVersion="1">
+<BundleInfo name="ChimeraX-VinaGridBox" version="2.0.0" package="chimerax.vinagridbox" customInit="true" minSessionVersion="1" maxSessionVersion="1">
   <Author>Ayan Bhowmik</Author>
   <Email>ayan.bhowmik.bd@gmail.com</Email>
-  <URL>https://www.rbvi.ucsf.edu/chimerax/</URL>
-  <Synopsis>Visualize, inspect, and export AutoDock Vina search-space center and size values in ChimeraX.</Synopsis>
+  <URL>https://github.com/OriginalAyan/VinaGridBox</URL>
+  <Synopsis>Visualize and edit AutoDock Vina search spaces, derive selection boxes, and inspect bounds.</Synopsis>
   <Description>
-ChimeraX Vina Grid Box is a ChimeraX bundle for defining and inspecting an AutoDock Vina search space directly on a molecular structure. It visualizes Vina center_x/center_y/center_z and size_x/size_y/size_z values as a 3D box, can derive a padded selection bounding box (recommended for receptor pockets) or a Vina-style ligand-centroid box (for ligand-only compatibility checks) from selected atoms, reports exact Cartesian bounds, and copies a Vina-ready configuration block. The optional rounded map-extent display illustrates the voxelized span implied by Vina's grid spacing without changing the exported size values.
+ChimeraX Vina Grid Box (VinaGridBox) defines, visualizes and checks AutoDock Vina search spaces directly on molecular structures. It exposes Vina's center_x/center_y/center_z and size_x/size_y/size_z values in a responsive GUI, shows exact Cartesian bounds, copies Vina-ready configuration values, and checks whether selected atoms are inside the box. Boxes can be generated from the current selection using recommended minimum/maximum bounds plus padding or a ligand-centroid method for comparison with Vina's ligand-derived convention. The optional rounded map-extent outline illustrates grid-spacing discretization without changing exported size values.
 
-The stable release excludes experimental drag-resize controls. Center and size are edited numerically in the GUI or with the vinabox command. For selection-derived boxes, the recommended method is an axis-aligned minimum/maximum bounding box with padding added to every side. A second, explicitly ligand-oriented option mirrors Vina’s ligand-centroid box calculation. The bundle does not perform docking or ligand/receptor preparation.
+The GUI supports numerical editing, undo/redo, mouse-based box movement and face resizing, color selection, and a toggle between normal scene-depth occlusion and drawing the box on top of the scene. VinaGridBox does not run docking or prepare PDBQT files. It uses ChimeraX's built-in AutoDock PDBQT reader and sets that native format as the preferred default for .pdbqt files; it does not register a separate PDBQT reader or provide a separate PDBQT-opening action.
 
-Author and maintainer: Ayan Bhowmik (ayan.bhowmik.bd@gmail.com). Coding and debugging were carried out with assistance from ChatGPT (OpenAI).
+This release is distributed under LGPL-2.1-only because the mouse interaction implementation includes adapted third-party code. See LICENSE.txt and THIRD_PARTY_NOTICES.md. Author and maintainer: Ayan Bhowmik (ayan.bhowmik.bd@gmail.com). Coding and debugging were carried out with assistance from ChatGPT (OpenAI).
   </Description>
   <Categories>
     <Category name="Binding Analysis"/>
@@ -24,17 +24,18 @@ Author and maintainer: Ayan Bhowmik (ayan.bhowmik.bd@gmail.com). Coding and debu
   <DataFiles>
     <DataFile>docs/user/tools/vinagridbox.html</DataFile>
     <DataFile>LICENSE.txt</DataFile>
+    <DataFile>THIRD_PARTY_NOTICES.md</DataFile>
   </DataFiles>
   <Classifiers>
     <PythonClassifier>Development Status :: 3 - Alpha</PythonClassifier>
     <PythonClassifier>Intended Audience :: Science/Research</PythonClassifier>
-    <PythonClassifier>License :: OSI Approved :: MIT License</PythonClassifier>
+    <PythonClassifier>License :: OSI Approved :: GNU Lesser General Public License v2.1 (LGPLv2.1)</PythonClassifier>
     <PythonClassifier>Natural Language :: English</PythonClassifier>
     <PythonClassifier>Programming Language :: Python :: 3</PythonClassifier>
     <PythonClassifier>Programming Language :: Python :: 3.11</PythonClassifier>
     <PythonClassifier>Topic :: Scientific/Engineering :: Chemistry</PythonClassifier>
     <PythonClassifier>Topic :: Scientific/Engineering :: Visualization</PythonClassifier>
     <ChimeraXClassifier>ChimeraX :: Tool :: Vina Grid Box :: Binding Analysis :: Visualize and edit AutoDock Vina search-space center and size values</ChimeraXClassifier>
-    <ChimeraXClassifier>ChimeraX :: Command :: vinabox :: Binding Analysis :: Create/update boxes, derive boxes with bounds/centroid methods, show/hide GUI, report, or clear</ChimeraXClassifier>
+    <ChimeraXClassifier>ChimeraX :: Command :: vinabox :: Binding Analysis :: Create/update search boxes, derive selection boxes, set native PDBQT preference, show/hide GUI, report, or clear</ChimeraXClassifier>
   </Classifiers>
 </BundleInfo>

@@ -1,52 +1,55 @@
 # Changelog
 
+This changelog lists published releases. Intermediate development/test builds between v1.9.1 and v2.0.0 were not separate public releases; their changes are consolidated in the v2.0.0 entry below.
+
+## 2.0.0 — first public v2.x release after v1.9.1
+
+### Added
+- Interactive box movement and face resizing when Mouse interaction is enabled: left-drag moves the box; right-drag resizes the selected face while keeping the opposite face fixed.
+- A display toggle that switches between normal scene-depth occlusion and drawing box geometry on top of the molecular scene.
+- ChimeraX undo/redo support for box creation/removal, numeric geometry edits, CLI updates, selection-derived box generation, padding/method changes, completed mouse gestures, color changes and display options. GUI show/hide is intentionally not undoable.
+- A recommended selection-bounds-plus-padding method for receptor-pocket selections, alongside a ligand-centroid method for comparison with Vina's ligand-derived box convention.
+- More complete command support for `vinabox nativepdbqt`, which restores the preferred native `.pdbqt` reader when needed.
+
+### Changed
+- PDBQT opening uses ChimeraX's built-in AutoDock PDBQT reader. VinaGridBox does not register a custom PDBQT provider or add a separate PDBQT file chooser. Multi-pose docking results can use the built-in ViewDock workflow.
+- Improved the native `.pdbqt` format preference initialization to handle ordinary file opening, Explorer-open and drag-and-drop.
+- Improved the responsive GUI, exact-bound reporting, selection containment checks, configuration copying and grid-span reference display.
+
+### Licensing and third-party notices
+- The v2.x release is licensed under LGPL-2.1-only because the mouse interaction implementation includes adapted code from an LGPL-licensed ChimeraX bundle. See `LICENSE.txt` and `THIRD_PARTY_NOTICES.md`.
+- Previous public releases through v1.9.1 remain under their original MIT license; this release does not retroactively change their terms.
+
 ## 1.9.1 — GUI startup command fix
 
-- Fix `vinabox showgui` and commands that need to create the GUI before first use.
-- Use ChimeraX's supported `tools.get_singleton()` API instead of the nonexistent `session.ui.display_tool_window()` method.
-- Route the Tools menu and CLI through the same singleton tool instance to avoid duplicate windows.
+- Fixed `vinabox showgui` and commands that need to create the GUI before first use.
+- Used ChimeraX's supported `tools.get_singleton()` API rather than a nonexistent UI method.
+- Routed Tools-menu and CLI startup through the same singleton instance to avoid duplicate windows.
 - No changes to box geometry or the two selection calculation methods.
-
 
 ## 1.9 — shorter CLI actions
 
-- Added short selection actions: `vinabox bounds padding 4` and `vinabox centroid padding 4`.
-- Added explicit GUI actions: `vinabox showgui` and `vinabox hidegui`.
-- Added accepted synonyms `vinabox guishow` and `vinabox guihide`.
-- Kept the previous long selection actions (`from-selection-bounds`, `from-selection-vina`) and GUI actions (`show`, `hide`) as backwards-compatible aliases.
-- Updated the README and ChimeraX HTML help so new examples use the shorter, clearer command forms.
-- No changes to box mathematics or GUI controls.
+- Added `vinabox bounds padding 4` and `vinabox centroid padding 4`.
+- Added `vinabox showgui` and `vinabox hidegui`, with `guishow` and `guihide` synonyms.
+- Retained previous selection and GUI action names as compatibility aliases.
+- Updated user documentation and CLI examples.
 
 ## 1.8
 
-- Fixed a missing layout insertion for the manual Vina box field group.
-- Restored the Center X/Y/Z and Size X/Y/Z controls in the GUI.
-- Fixed the Qt widget lifetime issue that caused deleted QDoubleSpinBox errors during tool startup and selection-derived box updates.
-- No box mathematics or CLI semantics changed from v1.7.
+- Fixed GUI layout ownership for the manual center/size field group.
+- Restored Center X/Y/Z and Size X/Y/Z controls.
+- Fixed Qt widget-lifetime errors during startup and selection-derived box updates.
 
 ## 1.7 — selection methods and Toolshed preparation
 
-- Added **Selection bounds + padding (recommended)** for selected receptor residues and arbitrary atom groups.
-- Added **Vina ligand-centroid method** as an explicit second option for ligand-oriented compatibility checks.
-- Added CLI actions `vinabox from-selection-bounds padding 4` and `vinabox from-selection-vina padding 4`.
-- Padding changes and method changes recalculate an active selection-derived box.
-- Updated GUI help, README, bundle description, and CLI reference to explain both calculations and their intended uses.
-- Documented that the maintainer has not found a clear published rationale in the Vina source/documentation reviewed for choosing its centroid-based ligand box over a bounds-centered box; bounds is recommended here for receptor-pocket selection, not claimed universally superior.
-- Kept the bundle under **Tools → Binding Analysis** as advised by ChimeraX developer Eric Pettersen.
-- No docking execution or drag-resize was added.
+- Added selection bounds plus padding for receptor pockets and arbitrary selected atom groups.
+- Added Vina ligand-centroid calculation as a second option for ligand-oriented comparison.
+- Documented both methods, padding behavior, and their distinct purposes.
+- Used Binding Analysis as the tool category following ChimeraX developer feedback.
 
-## 1.6 pre-submission metadata adjustment
+## 1.6 — stable release metadata and documentation
 
-- Changed the bundle and tool menu category from General to Binding Analysis following ChimeraX developer feedback.
-- Updated GUI navigation instructions. No box geometry or CLI implementation changes.
+- Expanded user documentation and Toolshed metadata.
+- Added maintainer contact details, citation guidance, and development acknowledgement.
+- Documented exact box bounds, padding, selection checks, and rounded map extent.
 
-## 1.6 — stable release metadata/documentation refresh
-
-- Expanded bundle description and user documentation for ChimeraX Toolshed publication.
-- Added author and maintainer metadata for Ayan Bhowmik.
-- Added MIT license metadata and license file.
-- Added detailed GUI and CLI documentation.
-- Added explicit explanation of selection padding, Check selection, and Vina rounded map extent.
-- Added citation guidance and development acknowledgement.
-- Documented the stable release limitation that experimental mouse drag-resize is excluded.
-- No changes to the tested core box mathematics or `vinabox` CLI behavior.

@@ -32,6 +32,13 @@ def _get_or_create_tool(session, *, show=False):
     return tool
 
 
+
+def set_native_pdbqt_preference(session, *, force=True):
+    """Set the .pdbqt suffix preference to ChimeraX's native reader."""
+    from .format_preference import prefer_native_pdbqt
+    return prefer_native_pdbqt(session.data_formats, force=force)
+
+
 def cmd_vinabox(session, action, center=None, size=None, spacing=0.375, padding=4.0):
     """Execute a VinaGridBox CLI action.
 
@@ -48,6 +55,13 @@ def cmd_vinabox(session, action, center=None, size=None, spacing=0.375, padding=
     elif action in ("hidegui", "guihide", "hide"):
         if tool is not None:
             tool.display(False)
+    elif action in ("nativepdbqt", "setpdbqtdefault"):
+        changed, previous = set_native_pdbqt_preference(session, force=True)
+        session.logger.info(
+            "VinaGridBox set ChimeraX's native AutoDock PDBQT as the .pdbqt default "
+            "and removed the competing default claim for .pdbqt. Normal opening "
+            "should now use the native reader (ViewDock for multi-pose results)."
+        )
     elif action == "clear":
         if tool is not None:
             tool.clear_box()
@@ -71,7 +85,7 @@ def cmd_vinabox(session, action, center=None, size=None, spacing=0.375, padding=
             tool.report()
     else:
         raise ValueError(
-            "Unknown vinabox action. Use set, bounds, centroid, showgui, "
+            "Unknown vinabox action. Use set, bounds, centroid, nativepdbqt, showgui, "
             "hidegui, report, or clear. GUI aliases: guishow/guihide. "
             "Legacy aliases are also accepted: from-selection-bounds, "
             "from-selection-vina, show, hide."
@@ -81,5 +95,5 @@ def cmd_vinabox(session, action, center=None, size=None, spacing=0.375, padding=
 vinabox_desc = CmdDesc(
         required=[("action", StringArg)],
         keyword=[("center", Float3Arg), ("size", Float3Arg), ("spacing", FloatArg), ("padding", FloatArg)],
-        synopsis="set a Vina box, derive from selected atoms, show/hide the GUI, report, or clear",
+        synopsis="edit a Vina box, set native PDBQT preference, derive selection boxes, show/hide GUI, report, or clear",
     )

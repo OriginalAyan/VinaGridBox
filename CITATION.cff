@@ -1,13 +1,13 @@
 cff-version: 1.2.0
 message: "If you use ChimeraX Vina Grid Box in your work, please cite it as follows."
 title: "ChimeraX Vina Grid Box"
-version: "1.9.1"
+version: 2.0.0
 authors:
   - family-names: "Bhowmik"
     given-names: "Ayan"
     email: "ayan.bhowmik.bd@gmail.com"
 year: 2026
-license: "MIT"
+license: LGPL-2.1-only
 type: software
 keywords:
   - ChimeraX
@@ -15,3 +15,4 @@ keywords:
   - molecular docking
   - docking search space
   - visualization
+repository-code: https://github.com/OriginalAyan/VinaGridBox
